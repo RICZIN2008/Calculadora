@@ -27,7 +27,6 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
     }
     .display {
       background: #222;
@@ -36,7 +35,9 @@
       border-radius: 10px;
       text-align: right;
       word-wrap: break-word;
-      min-height: 80px;
+      overflow-wrap: break-word;
+      max-height: 150px;
+      overflow-y: auto;
     }
     .history {
       margin-top: 10px;
@@ -71,11 +72,9 @@
     }
     .operator {
       background: #ff9500;
-      color: white;
     }
     .equal {
       background: #34c759;
-      color: white;
       grid-column: span 2;
     }
     .clear {
@@ -112,11 +111,11 @@
       <button class="operator" onclick="append('+')">+</button>
 
       <button class="zero" onclick="append('0')">0</button>
-      <button onclick="append(',')">,</button>
+      <button onclick="append('.')">.</button>
       <button class="equal" onclick="calculate()">=</button>
 
-      <button onclick="append('Math.PI')">π</button>
-      <button onclick="append('Math.sqrt(')">√</button>
+      <button onclick="append('π')">π</button>
+      <button onclick="append('√(')">√</button>
       <button onclick="append('>')">&gt;</button>
       <button onclick="append('<')">&lt;</button>
     </div>
@@ -127,15 +126,12 @@
     const historyDiv = document.getElementById("history");
 
     function append(value) {
-      if (value === ',' && !display.textContent.includes('.')) {
-        value = '.';
-      }
-
       if (display.textContent === "0" || display.textContent === "Error") {
         display.textContent = value;
       } else {
         display.textContent += value;
       }
+      scrollDisplayToBottom();
     }
 
     function clearDisplay() {
@@ -152,15 +148,16 @@
 
     function calculate() {
       try {
-        const original = display.textContent;
-        const expression = original
-          .replace(/÷/g, '/')
+        let original = display.textContent;
+        let expression = original
+          .replace(/π/g, 'Math.PI')
+          .replace(/√\(/g, 'Math.sqrt(')
           .replace(/×/g, '*')
+          .replace(/÷/g, '/')
           .replace(/,/g, '.');
 
         const result = eval(expression);
         display.textContent = result;
-
         addToHistory(original, result);
       } catch (error) {
         display.textContent = "Error";
@@ -174,6 +171,11 @@
       historyDiv.appendChild(entry);
       historyDiv.scrollTop = historyDiv.scrollHeight;
     }
+
+    function scrollDisplayToBottom() {
+      display.scrollTop = display.scrollHeight;
+    }
   </script>
 </body>
-</html>
+        </html>
+                                                    
