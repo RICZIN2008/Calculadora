@@ -22,7 +22,7 @@
     }
     .calculator {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       height: 100%;
       padding: 20px;
       display: flex;
@@ -98,8 +98,13 @@
       <button class="operator" onclick="append('+')">+</button>
 
       <button class="zero" onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
+      <button onclick="append(',')">,</button>
       <button class="equal" onclick="calculate()">=</button>
+
+      <button onclick="append('Math.PI')">π</button>
+      <button onclick="append('Math.sqrt(')">√</button>
+      <button onclick="append('>')">&gt;</button>
+      <button onclick="append('<')">&lt;</button>
     </div>
   </div>
 
@@ -107,7 +112,11 @@
     let display = document.getElementById("display");
 
     function append(value) {
-      if (display.textContent === "0" && value !== '.') {
+      if (value === ',' && !display.textContent.includes('.')) {
+        value = '.';
+      }
+
+      if (display.textContent === "0" && value !== '.' && value !== 'Math.PI' && value !== 'Math.sqrt(') {
         display.textContent = value;
       } else {
         display.textContent += value;
@@ -128,7 +137,11 @@
 
     function calculate() {
       try {
-        let expression = display.textContent.replace(/÷/g, '/').replace(/×/g, '*');
+        let expression = display.textContent
+          .replace(/÷/g, '/')
+          .replace(/×/g, '*')
+          .replace(/,/g, '.');
+
         let result = eval(expression);
         display.textContent = result;
       } catch (error) {
