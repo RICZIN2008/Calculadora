@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Calculadora Avançada</title>
+  <title>Calculadora Avançada com Histórico</title>
   <style>
     * {
       margin: 0;
@@ -27,7 +27,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
     .display {
       background: #222;
@@ -37,6 +37,19 @@
       text-align: right;
       word-wrap: break-word;
       min-height: 80px;
+    }
+    .history {
+      margin-top: 10px;
+      background: #111;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .history-entry {
+      border-bottom: 1px solid #444;
+      padding: 4px 0;
     }
     .buttons {
       display: grid;
@@ -76,6 +89,7 @@
 <body>
   <div class="calculator">
     <div class="display" id="display">0</div>
+    <div class="history" id="history"></div>
     <div class="buttons">
       <button class="clear" onclick="clearDisplay()">C</button>
       <button onclick="deleteLast()">⌫</button>
@@ -109,14 +123,15 @@
   </div>
 
   <script>
-    let display = document.getElementById("display");
+    const display = document.getElementById("display");
+    const historyDiv = document.getElementById("history");
 
     function append(value) {
       if (value === ',' && !display.textContent.includes('.')) {
         value = '.';
       }
 
-      if (display.textContent === "0" && value !== '.' && value !== 'Math.PI' && value !== 'Math.sqrt(') {
+      if (display.textContent === "0" || display.textContent === "Error") {
         display.textContent = value;
       } else {
         display.textContent += value;
@@ -128,7 +143,7 @@
     }
 
     function deleteLast() {
-      if (display.textContent.length === 1 || display.textContent === "Error") {
+      if (display.textContent.length <= 1 || display.textContent === "Error") {
         display.textContent = "0";
       } else {
         display.textContent = display.textContent.slice(0, -1);
@@ -137,17 +152,29 @@
 
     function calculate() {
       try {
-        let expression = display.textContent
+        const original = display.textContent;
+        const expression = original
           .replace(/÷/g, '/')
           .replace(/×/g, '*')
           .replace(/,/g, '.');
 
-        let result = eval(expression);
+        const result = eval(expression);
         display.textContent = result;
+
+        addToHistory(original, result);
       } catch (error) {
         display.textContent = "Error";
       }
     }
+
+    function addToHistory(expression, result) {
+      const entry = document.createElement("div");
+      entry.classList.add("history-entry");
+      entry.textContent = `${expression} = ${result}`;
+      historyDiv.appendChild(entry);
+      historyDiv.scrollTop = historyDiv.scrollHeight;
+    }
   </script>
 </body>
-</html>
+  </html>
+  
